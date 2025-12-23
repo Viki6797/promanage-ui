@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import PageTitle from "../components/PageTitle";
+import GlassCard from "../components/GlassCard";
 import {
   collection,
   addDoc,
@@ -7,21 +9,20 @@ import {
   doc,
   updateDoc,
 } from "firebase/firestore";
+
 import { db } from "../firebase";
 
 import {
   Button,
+  Grid,
+  Card,
+  CardContent,
+  CardActions,
+  Typography,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   TextField,
 } from "@mui/material";
 
@@ -66,7 +67,6 @@ const Teams = ({ userRole }) => {
   };
 
   const handleDelete = async (id) => {
-    if (userRole !== "admin") return; // role check ❗
     await deleteDoc(doc(db, "teams", id));
     fetchTeams();
   };
@@ -86,11 +86,12 @@ const Teams = ({ userRole }) => {
 
   return (
     <div>
-      <h2>Teams</h2>
+      <PageTitle>Teams</PageTitle>
+
 
       <Button
         variant="contained"
-        sx={{ mb: 2 }}
+        sx={{ mb: 3 }}
         onClick={() => {
           resetForm();
           setOpen(true);
@@ -99,42 +100,48 @@ const Teams = ({ userRole }) => {
         + Add Team
       </Button>
 
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Team Name</TableCell>
-              <TableCell>Members</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
+      {/* TEAM GRID */}
+      <Grid container spacing={3}>
+        {teams.map((team, index) => (
+          <Grid item xs={12} sm={6} md={4} key={team.id}>
+            <GlassCard
+              sx={{
+                borderRadius: 4,
+                backdropFilter: "blur(10px)",
+                background: "rgba(255,255,255,0.35)",
+                boxShadow: "0 6px 20px rgba(0,0,0,0.15)",
+                transition: "transform 0.25s ease, box-shadow 0.25s ease",
+                "&:hover": {
+                  transform: "translateY(-6px)",
+                  boxShadow: "0 12px 30px rgba(0,0,0,0.25)",
+                },
+              }}
+            >
+              <CardContent>
+                <Typography variant="h6" sx={{ mb: 1 }}>
+                  {team.teamName}
+                </Typography>
 
-          <TableBody>
-            {teams.map((team, index) => (
-              <TableRow key={team.id}>
-                <TableCell>{index + 1}</TableCell>
-                <TableCell>{team.teamName}</TableCell>
-                <TableCell>{team.members}</TableCell>
-                <TableCell>
-                  <Button onClick={() => handleEdit(team)}>EDIT</Button>
+                <Typography variant="body2" sx={{ opacity: 0.7 }}>
+                  Members: {team.members}
+                </Typography>
+              </CardContent>
 
-                  {userRole === "admin" && (
-                    <Button
-                      color="error"
-                      onClick={() => handleDelete(team.id)}
-                    >
-                      DELETE
-                    </Button>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+              <CardActions sx={{ display: "flex", justifyContent: "flex-end" }}>
+                <Button onClick={() => handleEdit(team)}>EDIT</Button>
 
-      {/* Modal Dialog */}
+                {userRole === "admin" && (
+                  <Button color="error" onClick={() => handleDelete(team.id)}>
+                    DELETE
+                  </Button>
+                )}
+              </CardActions>
+            </GlassCard>
+          </Grid>
+        ))}
+      </Grid>
+
+      {/* ADD/EDIT MODAL */}
       <Dialog open={open} onClose={() => setOpen(false)}>
         <DialogTitle>{editTeam ? "Edit Team" : "Add Team"}</DialogTitle>
 
@@ -149,7 +156,7 @@ const Teams = ({ userRole }) => {
 
           <TextField
             margin="dense"
-            label="Members Count"
+            label="Members"
             type="number"
             fullWidth
             value={members}

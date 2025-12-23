@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import PageTitle from "../components/PageTitle";
+import GlassCard from "../components/GlassCard";
+
 import {
   collection,
   addDoc,
@@ -7,23 +10,23 @@ import {
   doc,
   updateDoc,
 } from "firebase/firestore";
+
 import { db } from "../firebase";
+
 import {
   Button,
-  Chip,
+  Grid,
+  Card,
+  CardContent,
+  CardActions,
+  Typography,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
   TextField,
   MenuItem,
+  Chip,
 } from "@mui/material";
 
 const statusColors = {
@@ -62,7 +65,7 @@ const Tasks = ({ userRole }) => {
     fetchTasks();
   }, []);
 
-  const handleAdd = async () => {
+  const handleSave = async () => {
     if (editTask) {
       await updateDoc(doc(db, "tasks", editTask.id), {
         name,
@@ -76,6 +79,7 @@ const Tasks = ({ userRole }) => {
         owner,
         status,
         priority,
+        createdAt: new Date(),
       });
     }
 
@@ -85,7 +89,6 @@ const Tasks = ({ userRole }) => {
   };
 
   const handleDelete = async (id) => {
-    if (userRole !== "admin") return; // role check
     await deleteDoc(doc(db, "tasks", id));
     fetchTasks();
   };
@@ -109,11 +112,11 @@ const Tasks = ({ userRole }) => {
 
   return (
     <div>
-      <h2>Tasks</h2>
+      <PageTitle>Tasks</PageTitle>
 
       <Button
         variant="contained"
-        sx={{ marginBottom: 2 }}
+        sx={{ mb: 3 }}
         onClick={() => {
           resetForm();
           setOpen(true);
@@ -122,55 +125,67 @@ const Tasks = ({ userRole }) => {
         + Add Task
       </Button>
 
-      <TableContainer component={Paper}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Name</TableCell>
-              <TableCell>Owner</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Priority</TableCell>
-              <TableCell>Actions</TableCell>
-            </TableRow>
-          </TableHead>
+      {/* TASK GRID */}
+      <Grid container spacing={3}>
+        {tasks.map((task, index) => (
+          <Grid item xs={12} sm={6} md={4} key={task.id}>
+            <GlassCard
+              sx={{
+                borderRadius: 4,
+                backdropFilter: "blur(10px)",
+                background: "rgba(255,255,255,0.35)",
+                boxShadow: "0 6px 20px rgba(0,0,0,0.15)",
+                transition: "transform 0.25s ease, box-shadow 0.25s ease",
+                "&:hover": {
+                  transform: "translateY(-6px)",
+                  boxShadow: "0 12px 30px rgba(0,0,0,0.25)",
+                },
+              }}
+            >
+              <CardContent>
+                <Typography variant="h6" sx={{ mb: 1 }}>
+                  {task.name}
+                </Typography>
 
-          <TableBody>
-            {tasks.map((task, index) => (
-              <TableRow key={task.id}>
-                <TableCell>{index + 1}</TableCell>
-                <TableCell>{task.name}</TableCell>
-                <TableCell>{task.owner}</TableCell>
-                <TableCell>
-                  <Chip label={task.status} color={statusColors[task.status]} />
-                </TableCell>
-                <TableCell>
+                <Typography variant="body2" sx={{ opacity: 0.7 }}>
+                  Owner: {task.owner}
+                </Typography>
+
+                <div style={{ marginTop: "10px", display: "flex", gap: "8px" }}>
+                  <Chip
+                    label={task.status}
+                    color={statusColors[task.status]}
+                    size="small"
+                  />
                   <Chip
                     label={task.priority}
                     color={priorityColors[task.priority]}
+                    size="small"
                   />
-                </TableCell>
-                <TableCell>
-                  <Button onClick={() => handleEdit(task)}>EDIT</Button>
+                </div>
+              </CardContent>
 
-                  {userRole === "admin" && (
-                    <Button
-                      color="error"
-                      onClick={() => handleDelete(task.id)}
-                    >
-                      DELETE
-                    </Button>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+              <CardActions sx={{ display: "flex", justifyContent: "flex-end" }}>
+                <Button onClick={() => handleEdit(task)}>EDIT</Button>
 
-      {/* Modal */}
+                {userRole === "admin" && (
+                  <Button
+                    color="error"
+                    onClick={() => handleDelete(task.id)}
+                  >
+                    DELETE
+                  </Button>
+                )}
+              </CardActions>
+            </GlassCard>
+          </Grid>
+        ))}
+      </Grid>
+
+      {/* ADD/EDIT MODAL */}
       <Dialog open={open} onClose={() => setOpen(false)}>
         <DialogTitle>{editTask ? "Edit Task" : "Add Task"}</DialogTitle>
+
         <DialogContent>
           <TextField
             margin="dense"
@@ -217,7 +232,7 @@ const Tasks = ({ userRole }) => {
 
         <DialogActions>
           <Button onClick={() => setOpen(false)}>Cancel</Button>
-          <Button onClick={handleAdd}>Save</Button>
+          <Button onClick={handleSave}>Save</Button>
         </DialogActions>
       </Dialog>
     </div>

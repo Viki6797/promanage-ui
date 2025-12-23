@@ -1,8 +1,6 @@
 import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
-import UserManagement from "./pages/UserManagement"; // ✅ FIXED IMPORT
-
+import UserManagement from "./pages/UserManagement";
 import MainLayout from "./layout/MainLayout";
 import Dashboard from "./pages/Dashboard";
 import Projects from "./pages/Projects";
@@ -30,6 +28,18 @@ const App = () => {
     localStorage.removeItem("user");
   };
 
+  // ⭐ ADD THIS — Background Theme Switcher
+  useEffect(() => {
+    if (mode === "light") {
+      document.body.classList.add("light-mode");
+      document.body.classList.remove("dark-mode");
+    } else {
+      document.body.classList.add("dark-mode");
+      document.body.classList.remove("light-mode");
+    }
+  }, [mode]);
+
+  // Load saved user
   useEffect(() => {
     const saved = localStorage.getItem("user");
     if (saved) {
@@ -51,21 +61,18 @@ const App = () => {
       >
         <Routes>
           <Route path="/" element={<Dashboard />} />
-
           <Route path="/projects" element={<Projects userRole={user.role} />} />
           <Route path="/tasks" element={<Tasks userRole={user.role} />} />
           <Route path="/teams" element={<Teams userRole={user.role} />} />
 
-          {/* ADMIN ONLY */}
-          {user.role === "admin" && (
-            <Route path="/user-management" element={<UserManagement />} />
+          {user.role === "admin" ? (
+            <Route
+              path="/user-management"
+              element={<UserManagement userRole={user.role} />}
+            />
+          ) : (
+            <Route path="/user-management" element={<Dashboard />} />
           )}
-
-          {/* USER visiting admin routes = redirect to dashboard */}
-          <Route
-            path="/user-management"
-            element={<Dashboard />}
-          />
         </Routes>
       </MainLayout>
     </BrowserRouter>

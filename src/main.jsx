@@ -3,6 +3,8 @@ import ReactDOM from "react-dom/client";
 import App from "./App.jsx";
 import { ThemeProvider, CssBaseline } from "@mui/material";
 import { getTheme } from "./theme.js";
+import "./global.css";
+
 
 const Root = () => {
   // Load theme from localStorage or default to light

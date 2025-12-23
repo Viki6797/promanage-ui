@@ -1,79 +1,63 @@
 import { Card, CardContent, Typography, Box } from "@mui/material";
-import { useEffect, useState } from "react";
-
-const gradients = {
-  folder: "linear-gradient(135deg, #4e65ff, #92effd)",
-  task: "linear-gradient(135deg, #ff9a9e, #fad0c4)",
-  group: "linear-gradient(135deg, #89f7fe, #66a6ff)",
-  default: "linear-gradient(135deg, #e0eafc, #cfdef3)",
-};
+import { motion } from "framer-motion";
 
 const StatCard = ({ label, value, icon, type }) => {
-  const [animate, setAnimate] = useState(false);
-  const [count, setCount] = useState(0);
-
-  // Count-up animation
-  useEffect(() => {
-    setAnimate(true);
-
-    let start = 0;
-    const end = parseInt(value, 10);
-
-    if (start === end || isNaN(end)) return;
-
-    const duration = 800;
-    const increment = Math.ceil(end / (duration / 30));
-
-    const timer = setInterval(() => {
-      start += increment;
-      if (start >= end) {
-        start = end;
-        clearInterval(timer);
-      }
-      setCount(start);
-    }, 30);
-
-    return () => clearInterval(timer);
-  }, [value]);
-
-  const backgroundGradient = gradients[type] || gradients.default;
+  const gradientMap = {
+    folder: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+    task: "linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)",
+    group: "linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)",
+  };
 
   return (
-    <Card
-      sx={{
-        p: 2,
-        width: 250,
-        borderRadius: 3,
-        background: `${backgroundGradient}, rgba(255,255,255,0.15)`,
-        backdropFilter: "blur(8px)",
-        color: "white",
-        border: "1px solid rgba(255,255,255,0.2)",
-        boxShadow: 4,
-        transform: animate ? "scale(1)" : "scale(0.7)",
-        opacity: animate ? 1 : 0,
-        transition:
-          "transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.5s ease",
-        cursor: "pointer",
-        "&:hover": {
-          transform: "scale(1.05)",
-          boxShadow: "0 10px 30px rgba(0,0,0,0.25)",
-        },
-      }}
+    <motion.div
+      whileHover={{ scale: 1.04 }}
+      transition={{ type: "spring", stiffness: 200 }}
+      style={{ width: "100%" }}
     >
-      <CardContent>
-        <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-          <Box sx={{ fontSize: 38, opacity: 0.9 }}>
+      <Card
+        elevation={4}
+        sx={{
+          borderRadius: "18px",
+          padding: 2,
+          background: gradientMap[type] || gradientMap.folder,
+          color: "white",
+          boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
+          cursor: "pointer",
+          backdropFilter: "blur(12px)",
+        }}
+      >
+        <CardContent sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+          {/* ICON BUBBLE */}
+          <Box
+            sx={{
+              width: 52,
+              height: 52,
+              borderRadius: "14px",
+              background: "rgba(255,255,255,0.25)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              backdropFilter: "blur(4px)",
+            }}
+          >
             {icon}
           </Box>
+
+          {/* TEXT */}
           <Box>
-            <Typography variant="h5" fontWeight="bold" sx={{ color: "white" }}>
-              {count}
+            <Typography
+              variant="h5"
+              sx={{ fontWeight: "bold", lineHeight: 1 }}
+            >
+              {value}
             </Typography>
-            <Typography sx={{ opacity: 0.8, color: "white" }}>{label}</Typography>
+            <Typography sx={{ opacity: 0.9, fontSize: "0.9rem" }}>
+              {label}
+            </Typography>
           </Box>
-        </Box>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 };
 

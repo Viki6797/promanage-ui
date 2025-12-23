@@ -1,106 +1,183 @@
 import { useEffect, useState } from "react";
-import { db } from "../firebase";
+import PageTitle from "../components/PageTitle";
+import GlassCard from "../components/GlassCard";
 import {
   collection,
-  getDocs,
   addDoc,
+  getDocs,
   deleteDoc,
   doc,
   updateDoc,
 } from "firebase/firestore";
 
-const UserManagement = () => {
+import { db } from "../firebase";
+import {
+  Button,
+  Grid,
+  Card,
+  CardContent,
+  CardActions,
+  Typography,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  TextField,
+  MenuItem,
+} from "@mui/material";
+
+const UserManagement = ({ userRole }) => {
   const [users, setUsers] = useState([]);
-  const [newUser, setNewUser] = useState({ username: "", password: "", role: "user" });
+  const [open, setOpen] = useState(false);
+
+  const [editUser, setEditUser] = useState(null);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState(""); // plain password (demo mode)
+  const [role, setRole] = useState("user");
 
   const fetchUsers = async () => {
-    const snapshot = await getDocs(collection(db, "users"));
-    setUsers(snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })));
-  };
-
-  const addUser = async () => {
-    if (!newUser.username || !newUser.password) return;
-
-    await addDoc(collection(db, "users"), newUser);
-    fetchUsers();
-    setNewUser({ username: "", password: "", role: "user" });
-  };
-
-  const resetPassword = async (id) => {
-    const newPass = prompt("Enter new password:");
-    if (!newPass) return;
-
-    await updateDoc(doc(db, "users", id), { password: newPass });
-    fetchUsers();
-  };
-
-  const deleteUser = async (id) => {
-    await deleteDoc(doc(db, "users", id));
-    fetchUsers();
+    const snap = await getDocs(collection(db, "users"));
+    setUsers(snap.docs.map((d) => ({ id: d.id, ...d.data() })));
   };
 
   useEffect(() => {
     fetchUsers();
   }, []);
 
+  const handleSave = async () => {
+    if (editUser) {
+      await updateDoc(doc(db, "users", editUser.id), {
+        username,
+        password,
+        role,
+      });
+    } else {
+      await addDoc(collection(db, "users"), {
+        username,
+        password,
+        role,
+      });
+    }
+
+    fetchUsers();
+    resetForm();
+    setOpen(false);
+  };
+
+  const handleDelete = async (id) => {
+    await deleteDoc(doc(db, "users", id));
+    fetchUsers();
+  };
+
+  const resetForm = () => {
+    setEditUser(null);
+    setUsername("");
+    setPassword("");
+    setRole("user");
+  };
+
+  const handleEdit = (user) => {
+    setEditUser(user);
+    setUsername(user.username);
+    setPassword(user.password);
+    setRole(user.role);
+    setOpen(true);
+  };
+
   return (
-    <div style={{ padding: "20px" }}>
-      <h2>User Management</h2>
+    <div>
+      <PageTitle>User Management</PageTitle>
 
-      <div style={{ marginBottom: "20px" }}>
-        <input
-          type="text"
-          placeholder="Username"
-          value={newUser.username}
-          onChange={(e) => setNewUser({ ...newUser, username: e.target.value })}
-          style={{ marginRight: "10px" }}
-        />
 
-        <input
-          type="password"
-          placeholder="Password"
-          value={newUser.password}
-          onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-          style={{ marginRight: "10px" }}
-        />
+      <Button
+        variant="contained"
+        sx={{ mb: 3 }}
+        onClick={() => {
+          resetForm();
+          setOpen(true);
+        }}
+      >
+        + Add User
+      </Button>
 
-        <select
-          value={newUser.role}
-          onChange={(e) => setNewUser({ ...newUser, role: e.target.value })}
-        >
-          <option value="user">User</option>
-          <option value="admin">Admin</option>
-        </select>
+      {/* USERS GRID */}
+      <Grid container spacing={3}>
+        {users.map((user) => (
+          <Grid item xs={12} sm={6} md={4} key={user.id}>
+            <GlassCard
+              sx={{
+                borderRadius: 4,
+                backdropFilter: "blur(10px)",
+                background: "rgba(255,255,255,0.35)",
+                boxShadow: "0 6px 20px rgba(0,0,0,0.15)",
+                transition: "0.25s",
+                "&:hover": {
+                  transform: "translateY(-6px)",
+                  boxShadow: "0 12px 30px rgba(0,0,0,0.25)",
+                },
+              }}
+            >
+              <CardContent>
+                <Typography variant="h6">{user.username}</Typography>
+                <Typography variant="body2" sx={{ opacity: 0.7 }}>
+                  Role: {user.role.toUpperCase()}
+                </Typography>
+              </CardContent>
 
-        <button onClick={addUser} style={{ marginLeft: "10px" }}>
-          Add User
-        </button>
-      </div>
+              <CardActions sx={{ display: "flex", justifyContent: "flex-end" }}>
+                  <Button onClick={() => handleEdit(user)}>EDIT</Button>
 
-      <table border="1" cellPadding="8">
-        <thead>
-          <tr>
-            <th>Username</th>
-            <th>Role</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
+                  {userRole === "admin" && (
+                      <Button color="error" onClick={() => handleDelete(user.id)}>
+                          DELETE
+                      </Button>
+                  )}
+              </CardActions>
 
-        <tbody>
-          {users.map((u) => (
-            <tr key={u.id}>
-              <td>{u.username}</td>
-              <td>{u.role}</td>
-              <td>
-                <button onClick={() => resetPassword(u.id)}>Reset Password</button>
-                <button onClick={() => deleteUser(u.id)} style={{ color: "red" }}>
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+            </GlassCard>
+          </Grid>
+        ))}
+      </Grid>
+
+      {/* ADD/EDIT USER MODAL */}
+      <Dialog open={open} onClose={() => setOpen(false)}>
+        <DialogTitle>{editUser ? "Edit User" : "Add User"}</DialogTitle>
+
+        <DialogContent>
+          <TextField
+            margin="dense"
+            label="Username"
+            fullWidth
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+
+          <TextField
+            margin="dense"
+            label="Password"
+            fullWidth
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+
+          <TextField
+            margin="dense"
+            select
+            fullWidth
+            label="Role"
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+          >
+            <MenuItem value="admin">Admin</MenuItem>
+            <MenuItem value="user">User</MenuItem>
+          </TextField>
+        </DialogContent>
+
+        <DialogActions>
+          <Button onClick={() => setOpen(false)}>Cancel</Button>
+          <Button onClick={handleSave}>Save</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };

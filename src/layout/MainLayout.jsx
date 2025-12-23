@@ -3,6 +3,8 @@ import AssignmentIcon from "@mui/icons-material/Assignment";
 import FolderIcon from "@mui/icons-material/Folder";
 import GroupIcon from "@mui/icons-material/Group";
 import LogoutIcon from "@mui/icons-material/Logout";
+import Brightness4 from "@mui/icons-material/Brightness4";
+import Brightness7 from "@mui/icons-material/Brightness7";
 
 import {
   AppBar,
@@ -122,9 +124,22 @@ const MainLayout = ({ children, toggleTheme, mode, user, onLogout }) => {
             />
 
             {/* THEME TOGGLE */}
-            <IconButton onClick={toggleTheme} sx={{ mr: 2 }}>
-              {mode === "light" ? <DarkModeIcon /> : <LightModeIcon />}
+            <IconButton 
+              onClick={toggleTheme}
+              sx={{
+                color: mode === "dark" ? "#ffffff" : "#000000",    // FIXES VISIBILITY
+                background: mode === "dark" ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.08)",
+                borderRadius: "50%",
+                padding: "6px",
+                transition: "0.2s ease",
+                "&:hover": {
+                  background: mode === "dark" ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.15)",
+                },
+              }}
+            >
+              {mode === "light" ? <Brightness4 /> : <Brightness7 />}
             </IconButton>
+
 
             {/* LOGOUT */}
             <IconButton color="inherit" onClick={onLogout}>
