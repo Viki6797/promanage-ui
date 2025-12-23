@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import FolderIcon from "@mui/icons-material/Folder";
@@ -19,15 +20,27 @@ import {
   Chip
 } from "@mui/material";
 
-import LightModeIcon from "@mui/icons-material/LightMode";
-import DarkModeIcon from "@mui/icons-material/DarkMode";
-
 import { NavLink } from "react-router-dom";
+
+// 🔥 Import background properly (Vite-friendly)
+import bgLight from "/bg-light.jpeg";
 
 const drawerWidth = 220;
 
 const MainLayout = ({ children, toggleTheme, mode, user, onLogout }) => {
   const role = user?.role;
+
+  // ⭐ Apply dynamic background (fixes Vite build)
+  useEffect(() => {
+    if (mode === "light") {
+      document.body.style.background = `url(${bgLight}) center/cover fixed`;
+    } else {
+      document.body.style.background = "#0d1117"; // dark mode
+    }
+    return () => {
+      document.body.style.background = "";
+    };
+  }, [mode]);
 
   return (
     <Box sx={{ display: "flex" }}>
@@ -124,22 +137,27 @@ const MainLayout = ({ children, toggleTheme, mode, user, onLogout }) => {
             />
 
             {/* THEME TOGGLE */}
-            <IconButton 
+            <IconButton
               onClick={toggleTheme}
               sx={{
-                color: mode === "dark" ? "#ffffff" : "#000000",    // FIXES VISIBILITY
-                background: mode === "dark" ? "rgba(255,255,255,0.15)" : "rgba(0,0,0,0.08)",
+                color: mode === "dark" ? "#ffffff" : "#000000",
+                background:
+                  mode === "dark"
+                    ? "rgba(255,255,255,0.15)"
+                    : "rgba(0,0,0,0.08)",
                 borderRadius: "50%",
                 padding: "6px",
                 transition: "0.2s ease",
                 "&:hover": {
-                  background: mode === "dark" ? "rgba(255,255,255,0.25)" : "rgba(0,0,0,0.15)",
-                },
+                  background:
+                    mode === "dark"
+                      ? "rgba(255,255,255,0.25)"
+                      : "rgba(0,0,0,0.15)"
+                }
               }}
             >
               {mode === "light" ? <Brightness4 /> : <Brightness7 />}
             </IconButton>
-
 
             {/* LOGOUT */}
             <IconButton color="inherit" onClick={onLogout}>

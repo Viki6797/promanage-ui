@@ -1,8 +1,5 @@
-/* LIGHT MODE BACKGROUND */
 body.light-mode {
-  background: url("/bg-light.jpeg") no-repeat center center fixed;
-  background-size: cover;
-  transition: background 0.3s ease-in-out;
+  background-color: #f5f7fa;
 }
 
 /* DARK MODE BACKGROUND */
