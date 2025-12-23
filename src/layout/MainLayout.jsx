@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import FolderIcon from "@mui/icons-material/Folder";
@@ -21,29 +20,22 @@ import {
 } from "@mui/material";
 
 import { NavLink } from "react-router-dom";
-
-// 🔥 Import background properly (Vite-friendly)
-import bgLight from "/bg-light.jpeg";
+import { useEffect } from "react";
 
 const drawerWidth = 220;
 
 const MainLayout = ({ children, toggleTheme, mode, user, onLogout }) => {
   const role = user?.role;
 
-  // ⭐ Apply dynamic background (fixes Vite build)
+  // ⭐ Apply body classes (LIGHT / DARK)
   useEffect(() => {
-    if (mode === "light") {
-      document.body.style.background = `url(${bgLight}) center/cover fixed`;
-    } else {
-      document.body.style.background = "#0d1117"; // dark mode
-    }
-    return () => {
-      document.body.style.background = "";
-    };
+    document.body.classList.remove("light-mode", "dark-mode");
+    document.body.classList.add(mode === "light" ? "light-mode" : "dark-mode");
   }, [mode]);
 
   return (
     <Box sx={{ display: "flex" }}>
+      
       {/* SIDEBAR */}
       <Drawer
         variant="permanent"
@@ -54,17 +46,16 @@ const MainLayout = ({ children, toggleTheme, mode, user, onLogout }) => {
             boxSizing: "border-box",
             background:
               mode === "light"
-                ? "rgba(255, 255, 255, 0.6)"
-                : "rgba(17, 25, 40, 0.4)",
+                ? "rgba(255,255,255,0.55)"
+                : "rgba(17,25,40,0.45)",
             backdropFilter: "blur(10px)",
-            borderRight: "1px solid rgba(255,255,255,0.2)",
+            borderRight: "1px solid rgba(255,255,255,0.25)",
             color: mode === "light" ? "#000" : "#fff"
           }
         }}
       >
         <Toolbar />
         <List>
-
           {role === "admin" && (
             <ListItemButton
               component={NavLink}
@@ -112,22 +103,19 @@ const MainLayout = ({ children, toggleTheme, mode, user, onLogout }) => {
           sx={{
             background:
               mode === "light"
-                ? "rgba(240,240,240,0.8)"
-                : "rgba(17, 25, 40, 0.6)",
+                ? "rgba(240,240,240,0.85)"
+                : "rgba(17, 25, 40, 0.65)",
             backdropFilter: "blur(12px)",
-            boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-            color: mode === "light" ? "#000" : "#fff"
+            color: mode === "light" ? "#000" : "#fff",
+            boxShadow: "0 4px 20px rgba(0,0,0,0.1)"
           }}
         >
-          <Toolbar sx={{ display: "flex", alignItems: "center" }}>
+          <Toolbar sx={{ display: "flex" }}>
             <Typography variant="h6" sx={{ flexGrow: 1 }}>
               ProManage UI
             </Typography>
 
-            {/* ROLE DISPLAY */}
-            <Typography sx={{ mr: 1, fontSize: "0.9rem" }}>
-              {role}
-            </Typography>
+            <Typography sx={{ mr: 1, fontSize: "0.9rem" }}>{role}</Typography>
 
             <Chip
               label={role === "admin" ? "ADMIN" : "USER"}
@@ -140,18 +128,17 @@ const MainLayout = ({ children, toggleTheme, mode, user, onLogout }) => {
             <IconButton
               onClick={toggleTheme}
               sx={{
-                color: mode === "dark" ? "#ffffff" : "#000000",
+                color: mode === "dark" ? "#fff" : "#000",
                 background:
                   mode === "dark"
-                    ? "rgba(255,255,255,0.15)"
-                    : "rgba(0,0,0,0.08)",
+                    ? "rgba(255,255,255,0.2)"
+                    : "rgba(0,0,0,0.1)",
                 borderRadius: "50%",
-                padding: "6px",
-                transition: "0.2s ease",
+                p: "6px",
                 "&:hover": {
                   background:
                     mode === "dark"
-                      ? "rgba(255,255,255,0.25)"
+                      ? "rgba(255,255,255,0.3)"
                       : "rgba(0,0,0,0.15)"
                 }
               }}
@@ -159,7 +146,6 @@ const MainLayout = ({ children, toggleTheme, mode, user, onLogout }) => {
               {mode === "light" ? <Brightness4 /> : <Brightness7 />}
             </IconButton>
 
-            {/* LOGOUT */}
             <IconButton color="inherit" onClick={onLogout}>
               <LogoutIcon />
             </IconButton>

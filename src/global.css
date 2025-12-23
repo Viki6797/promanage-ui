@@ -1,9 +1,10 @@
 body.light-mode {
-  background-color: #f5f7fa;
+  background-image: url("/bg-light.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
-/* DARK MODE BACKGROUND */
 body.dark-mode {
   background: #0d1117;
-  transition: background 0.3s ease-in-out;
 }
