@@ -1,16 +1,105 @@
-# React + Vite
+# 🧩 ProManage UI — Modern Project & Task Management Dashboard
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A fully polished, modern, animated **Project & Task Management UI** built with:
 
-Currently, two official plugins are available:
+- ⚛️ React (v19)
+- ⚡ Vite
+- 🔥 Firebase (Auth-less login simulation, Firestore CRUD)
+- 🎨 Material UI (Custom styled)
+- 📊 Recharts (Analytics)
+- ✨ Framer Motion (Animations)
+- 🧊 Glassmorphism + Gradients
+- 📁 Kanban Board with Drag & Drop
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+This is a **front-end + Firestore-driven admin panel** with a modern UI suitable for portfolio/demo purposes.
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## 🚀 Live Features
 
-## Expanding the ESLint configuration
+### ✅ **1. Authentication (Username/Password check)**
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- Custom glassmorphic login screen
+- Show/Hide password toggle  
+- Floating labels  
+- Error shake animation  
+- Pulsing login button  
+
+### ✅ **2. Dashboard**
+
+- Animated Stat Cards  
+- Task Status Pie Chart  
+- Weekly Productivity Chart  
+- Real-time data sync from Firestore  
+- Drag & Drop KanbanBoard connected to Firestore  
+
+### ✅ **3. Projects Page**
+
+- CRUD operations  
+- Clean card layout  
+- Role-based access (admin only)  
+
+### ✅ **4. Tasks Page**
+
+- Add, update status, delete  
+- Smooth UI interactions  
+- Same styling consistency  
+
+### ✅ **5. Teams Page**
+
+- Add teams  
+- Track number of members per team  
+
+### ✅ **6. User Management (Admin Only)**
+
+- Add users  
+- Edit users  
+- Delete users  
+- Glass UI cards  
+
+### ✅ **7. Light / Dark Mode**
+
+- Custom-designed theme switch  
+- Light mode uses a **premium animated background image**  
+- Dark mode uses clean deep contrast  
+
+---
+
+## 🛠 Tech Stack
+
+| Layer    | Tools Used |
+
+|--------------|--------------------------------|
+| Frontend     | React 19, React Router 7       |
+| UI | Material UI (MUI 7), Custom CSS          |
+| Animations   | Framer Motion                  |
+| Charts       | Recharts                       |
+| Database     | Firebase Firestore             |
+| Build Tool   | Vite                           |
+| Auth         | Custom username/password check |
+
+---
+
+## 📂 Project Structure
+
+promanage-ui/
+│── public/
+│ └── bg-light.jpeg
+│── src/
+│ ├── pages/
+│ │ ├── Dashboard.jsx
+│ │ ├── Login.jsx
+│ │ ├── Projects.jsx
+│ │ ├── Tasks.jsx
+│ │ └── Teams.jsx
+│ ├── components/
+│ │ ├── KanbanBoard.jsx
+│ │ ├── StatCard.jsx
+│ │ ├── TaskStatusChart.jsx
+│ │ └── WeeklyChart.jsx
+│ ├── layout/
+│ │ └── MainLayout.jsx
+│ ├── firebase.js
+│ ├── global.css
+│ └── App.jsx
+└── README.md
